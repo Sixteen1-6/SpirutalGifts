@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spiritual Gifts Survey</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #e8d9a0;
+    --gold-dark: #a07d2e;
+    --cream: #faf6ee;
+    --cream-dark: #f0e8d5;
+    --ink: #2c2418;
+    --ink-light: #5a4e3c;
+    --ink-muted: #8a7e6c;
+    --sage: #7a8c6e;
+    --sage-light: #d4dece;
+    --wine: #8b3a3a;
+    --shadow: rgba(44, 36, 24, 0.08);
+    --radius: 10px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* Decorative background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: 
+      radial-gradient(ellipse at 20% 0%, rgba(201, 168, 76, 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, rgba(122, 140, 110, 0.08) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+    animation: fadeDown 0.8s ease;
+  }
+
+  .header-ornament {
+    font-size: 28px;
+    color: var(--gold);
+    letter-spacing: 12px;
+    margin-bottom: 16px;
+  }
+
+  .header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+    margin-bottom: 12px;
+  }
+
+  .header p {
+    color: var(--ink-muted);
+    font-size: 15px;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  /* Scale Legend */
+  .scale-legend {
+    background: white;
+    border: 1px solid var(--cream-dark);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 36px;
+    box-shadow: 0 2px 12px var(--shadow);
+    animation: fadeUp 0.6s ease 0.2s both;
+  }
+
+  .scale-legend h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--gold-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+  }
+
+  .scale-legend ul {
+    list-style: none;
+    display: grid;
+    gap: 4px;
+  }
+
+  .scale-legend li {
+    font-size: 13.5px;
+    color: var(--ink-light);
+    display: flex;
+    gap: 8px;
+  }
+
+  .scale-legend li strong {
+    color: var(--gold-dark);
+    min-width: 16px;
+    font-weight: 600;
+  }
+
+  /* Progress bar */
+  .progress-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(250, 246, 238, 0.92);
+    backdrop-filter: blur(12px);
+    padding: 12px 0;
+    margin: 0 -24px 32px;
+    padding-left: 24px;
+    padding-right: 24px;
+    border-bottom: 1px solid var(--cream-dark);
+    transition: box-shadow 0.3s;
+  }
+
+  .progress-wrap.scrolled {
+    box-shadow: 0 4px 20px var(--shadow);
+  }
+
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .progress-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .progress-count {
+    font-size: 13px;
+    color: var(--gold-dark);
+    font-weight: 600;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 6px;
+    background: var(--cream-dark);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--sage));
+    border-radius: 3px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  /* Question items */
+  .question-item {
+    background: white;
+    border: 1px solid var(--cream-dark);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.25s ease;
+    box-shadow: 0 1px 4px var(--shadow);
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .question-item:hover {
+    border-color: var(--gold-light);
+    box-shadow: 0 3px 16px var(--shadow);
+  }
+
+  .question-item.answered {
+    border-left: 3px solid var(--sage);
+    background: rgba(255,255,255,0.8);
+  }
+
+  .q-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--gold);
+    min-width: 32px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .q-text {
+    flex: 1;
+    font-size: 14.5px;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  .q-select {
+    flex-shrink: 0;
+  }
+
+  .q-select select {
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--cream) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a07d2e' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") no-repeat right 12px center;
+    border: 1.5px solid var(--cream-dark);
+    border-radius: 8px;
+    padding: 10px 36px 10px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 60px;
+    text-align: center;
+  }
+
+  .q-select select:hover {
+    border-color: var(--gold-light);
+  }
+
+  .q-select select:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
+  }
+
+  .q-select select.has-value {
+    color: var(--ink);
+    background-color: var(--sage-light);
+    border-color: var(--sage);
+  }
+
+  /* Calculate Button */
+  .calculate-section {
+    text-align: center;
+    margin-top: 40px;
+    animation: fadeUp 0.6s ease 0.4s both;
+  }
+
+  .btn-calculate {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    color: white;
+    border: none;
+    padding: 16px 52px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 20px rgba(160, 125, 46, 0.3);
+  }
+
+  .btn-calculate:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(160, 125, 46, 0.4);
+  }
+
+  .btn-calculate:active {
+    transform: translateY(0);
+  }
+
+  .btn-calculate:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .missing-note {
+    font-size: 13px;
+    color: var(--wine);
+    margin-top: 12px;
+    display: none;
+  }
+
+  /* Results */
+  .results-section {
+    display: none;
+    margin-top: 48px;
+    animation: fadeUp 0.6s ease;
+  }
+
+  .results-section.visible {
+    display: block;
+  }
+
+  .results-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .results-header h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .results-header p {
+    color: var(--ink-muted);
+    font-size: 14px;
+  }
+
+  .gift-result {
+    background: white;
+    border: 1px solid var(--cream-dark);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 1px 6px var(--shadow);
+    transition: all 0.3s;
+  }
+
+  .gift-result:hover {
+    box-shadow: 0 4px 16px var(--shadow);
+  }
+
+  .gift-rank {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--gold);
+    min-width: 28px;
+    text-align: center;
+  }
+
+  .gift-rank.top { color: var(--gold-dark); }
+
+  .gift-info {
+    flex: 1;
+  }
+
+  .gift-name {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--ink);
+  }
+
+  .gift-score-text {
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin-top: 2px;
+  }
+
+  .gift-bar-wrap {
+    flex: 1;
+    max-width: 200px;
+  }
+
+  .gift-bar {
+    height: 10px;
+    background: var(--cream-dark);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .gift-bar-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.8s ease;
+    width: 0%;
+  }
+
+  .gift-bar-fill.high { background: linear-gradient(90deg, var(--gold-dark), var(--gold)); }
+  .gift-bar-fill.mid { background: linear-gradient(90deg, var(--sage), #a4b898); }
+  .gift-bar-fill.low { background: var(--cream-dark); }
+
+  .gift-score-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    min-width: 36px;
+    text-align: right;
+  }
+
+  .top-gifts-summary {
+    background: linear-gradient(135deg, var(--ink) 0%, #3d3426 100%);
+    color: white;
+    border-radius: var(--radius);
+    padding: 28px 28px;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+
+  .top-gifts-summary h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--gold-light);
+    margin-bottom: 12px;
+  }
+
+  .top-gift-badges {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .top-badge {
+    background: rgba(201, 168, 76, 0.15);
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    color: var(--gold-light);
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .btn-reset {
+    display: inline-block;
+    margin-top: 24px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    background: none;
+    border: 1.5px solid var(--cream-dark);
+    padding: 10px 28px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-reset:hover {
+    border-color: var(--ink-muted);
+    color: var(--ink);
+  }
+
+  /* Animations */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 600px) {
+    .question-item {
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .q-select {
+      width: 100%;
+    }
+    .q-select select {
+      width: 100%;
+    }
+    .gift-bar-wrap {
+      display: none;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="header-ornament">✦ ✦ ✦</div>
+    <h1>Spiritual Gifts Survey</h1>
+    <p>Rate each statement from 1 to 5 using the dropdowns. Your results will be calculated automatically.</p>
+  </div>
+
+  <div class="scale-legend">
+    <h3>Response Scale</h3>
+    <ul>
+      <li><strong>5</strong> Highly characteristic of me / definitely true</li>
+      <li><strong>4</strong> Most of the time this describes me</li>
+      <li><strong>3</strong> Frequently true — about 50% of the time</li>
+      <li><strong>2</strong> Occasionally true — about 25% of the time</li>
+      <li><strong>1</strong> Not at all characteristic of me</li>
+    </ul>
+  </div>
+
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-info">
+      <span class="progress-label">Progress</span>
+      <span class="progress-count" id="progressCount">0 / 80</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <div id="questionsContainer"></div>
+
+  <div class="calculate-section">
+    <button class="btn-calculate" id="btnCalculate" onclick="calculateResults()">Reveal My Gifts</button>
+    <p class="missing-note" id="missingNote"></p>
+  </div>
+
+  <div class="results-section" id="resultsSection">
+    <div class="results-header">
+      <h2>Your Spiritual Gifts Profile</h2>
+      <p>Ranked from strongest to developing</p>
+    </div>
+    <div class="top-gifts-summary" id="topSummary"></div>
+    <div id="resultsContainer"></div>
+    <div style="text-align:center">
+      <button class="btn-reset" onclick="resetSurvey()">Start Over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = [
+  "I have the ability to organize ideas, resources, time, and people effectively.",
+  "I am willing to study and prepare for the task of teaching.",
+  "I am able to relate the truths of God to specific situations.",
+  "I have a God-given ability to help others grow in their faith.",
+  "I possess a special ability to communicate the truth of salvation.",
+  "I have the ability to make critical decisions when necessary.",
+  "I am sensitive to the hurts of people.",
+  "I experience joy in meeting needs through sharing possessions.",
+  "I enjoy studying.",
+  "I have delivered God's message of warning and judgment.",
+  "I am able to sense the true motivation of persons and movements.",
+  "I have a special ability to trust God in difficult situations.",
+  "I have a strong desire to contribute to the establishment of new churches.",
+  "I take action to meet physical and practical needs rather than merely talking about or planning how to help.",
+  "I enjoy entertaining guests in my home.",
+  "I can adapt my guidance to fit the maturity of those working with me.",
+  "I can delegate and assign meaningful work.",
+  "I have an ability and desire to teach.",
+  "I am usually able to analyze a situation correctly.",
+  "I have a natural tendency to encourage others.",
+  "I am willing to take the initiative in helping other Christians grow in their faith.",
+  "I have an acute awareness of other people's emotions, such as loneliness, pain, fear, and anger.",
+  "I am a cheerful giver.",
+  "I spend time digging into facts.",
+  "I feel that I have a message from God to deliver to others.",
+  "I can recognize when a person is genuine/honest.",
+  "I am a person of vision (a clear mental portrait of a preferable future given by God). I am able to communicate vision in such a way that others commit to making the vision a reality.",
+  "I am willing to yield to God's will rather than question and waver.",
+  "I would like to be more active in getting the gospel to people in other countries.",
+  "It makes me happy to do things for people in need.",
+  "I am successful in getting a group to do its work joyfully.",
+  "I am able to make strangers feel at ease.",
+  "I have the ability to teach to a variety of different learning styles.",
+  "I can identify those who need encouragement.",
+  "I have trained Christians to be more obedient disciples of Christ.",
+  "I am willing to do whatever it takes to see others come to Christ.",
+  "I am drawn to people who are hurting.",
+  "I am a generous giver.",
+  "I am able to discover new truths in Scripture.",
+  "I have spiritual insights from Scripture concerning issues and people that compel me to speak out.",
+  "I can sense when a person is acting in accordance with God's will.",
+  "I can trust in God even when things look dark.",
+  "I can determine where God wants a group to go and help it get there.",
+  "I have a strong desire to take the gospel to places where it has never been heard.",
+  "I enjoy reaching out to new people in my church and community.",
+  "I am sensitive to the needs of people.",
+  "I have been able to make effective and efficient plans for accomplishing the goals of a group.",
+  "I often am consulted when fellow Christians are struggling to make difficult decisions.",
+  "I think about how I can comfort and encourage others in my congregation.",
+  "I am able to give spiritual direction to others.",
+  "I am able to present the gospel to lost persons in such a way that they accept the Lord and His salvation.",
+  "I possess an unusual capacity to understand the feelings of those in distress.",
+  "I have a strong sense of stewardship based on the recognition that God owns all things.",
+  "I have delivered to other persons messages that have come directly from God.",
+  "I can sense when a person is acting under God's leadership.",
+  "I try to be in God's will continually and be available for His use.",
+  "I feel that I should take the gospel to people who have different beliefs from me.",
+  "I have an acute awareness of the physical needs of others.",
+  "I am skilled in setting forth positive and precise steps of action.",
+  "I like to meet visitors at church and make them feel welcome.",
+  "I explain Scripture in such a way that others understand it.",
+  "I can usually see spiritual solutions to problems.",
+  "I welcome opportunities to help people who need comfort, consolation, encouragement, and counseling.",
+  "I feel at ease in sharing Christ with nonbelievers.",
+  "I can influence others to perform to their highest God-given potential.",
+  "I recognize the signs of stress and distress in others.",
+  "I desire to give generously and unpretentiously to worthwhile projects and ministries.",
+  "I can organize facts into meaningful relationships.",
+  "God gives me messages to deliver to His people.",
+  "I am able to sense whether people are being honest when they tell of their religious experiences.",
+  "I enjoy presenting the gospel to persons of other cultures and backgrounds.",
+  "I enjoy doing little things that help people.",
+  "I can give a clear, uncomplicated presentation of the gospel.",
+  "I have been able to apply biblical truth to the specific needs of my church.",
+  "God has used me to encourage others to live Christlike lives.",
+  "I have sensed the need to help other people become more effective in their ministries.",
+  "I like to talk about Jesus to those who do not know Him.",
+  "I have the ability to make strangers feel comfortable in my home.",
+  "I have a wide range of study resources and know how to secure information.",
+  "I feel assured that a situation will change for the glory of God even when the situation seems impossible."
+];
+
+// Gift definitions: name -> array of item numbers (1-indexed)
+const gifts = {
+  "Leadership":      [6, 16, 27, 43, 65],
+  "Administration":  [1, 17, 31, 47, 59],
+  "Teaching":        [2, 18, 33, 61, 73],
+  "Knowledge":       [9, 24, 39, 68, 79],
+  "Wisdom":          [3, 19, 48, 62, 74],
+  "Prophecy":        [10, 25, 40, 54, 69],
+  "Discernment":     [11, 26, 41, 55, 70],
+  "Exhortation":     [20, 34, 49, 63, 75],
+  "Shepherding":     [4, 21, 35, 50, 76],
+  "Faith":           [12, 28, 42, 56, 80],
+  "Evangelism":      [5, 36, 51, 64, 77],
+  "Apostleship":     [13, 29, 44, 57, 71],
+  "Service/Helps":   [14, 30, 46, 58, 72],
+  "Mercy":           [7, 22, 37, 52, 66],
+  "Giving":          [8, 23, 38, 53, 67],
+  "Hospitality":     [15, 32, 45, 60, 78]
+};
+
+// Build questions
+const container = document.getElementById('questionsContainer');
+questions.forEach((q, i) => {
+  const div = document.createElement('div');
+  div.className = 'question-item';
+  div.style.animationDelay = `${Math.min(i * 0.02, 0.8)}s`;
+  div.innerHTML = `
+    <span class="q-number">${i + 1}</span>
+    <span class="q-text">${q}</span>
+    <span class="q-select">
+      <select id="q${i + 1}" onchange="onAnswer(this, ${i})">
+        <option value="">—</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
+    </span>
+  `;
+  container.appendChild(div);
+});
+
+function onAnswer(sel, idx) {
+  const item = sel.closest('.question-item');
+  if (sel.value) {
+    sel.classList.add('has-value');
+    item.classList.add('answered');
+  } else {
+    sel.classList.remove('has-value');
+    item.classList.remove('answered');
+  }
+  updateProgress();
+}
+
+function updateProgress() {
+  const answered = document.querySelectorAll('select.has-value').length;
+  document.getElementById('progressCount').textContent = `${answered} / 80`;
+  document.getElementById('progressFill').style.width = `${(answered / 80) * 100}%`;
+}
+
+// Sticky shadow
+window.addEventListener('scroll', () => {
+  const pw = document.getElementById('progressWrap');
+  pw.classList.toggle('scrolled', window.scrollY > 200);
+});
+
+function calculateResults() {
+  // Check which are unanswered
+  const unanswered = [];
+  for (let i = 1; i <= 80; i++) {
+    if (!document.getElementById(`q${i}`).value) unanswered.push(i);
+  }
+
+  if (unanswered.length > 0) {
+    const note = document.getElementById('missingNote');
+    note.style.display = 'block';
+    if (unanswered.length <= 10) {
+      note.textContent = `Please answer question${unanswered.length > 1 ? 's' : ''}: ${unanswered.join(', ')}`;
+    } else {
+      note.textContent = `${unanswered.length} questions remaining. Please answer all 80 to see your results.`;
+    }
+    // Scroll to first unanswered
+    const first = document.getElementById(`q${unanswered[0]}`).closest('.question-item');
+    first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    first.style.boxShadow = '0 0 0 3px rgba(139, 58, 58, 0.3)';
+    setTimeout(() => first.style.boxShadow = '', 2000);
+    return;
+  }
+
+  document.getElementById('missingNote').style.display = 'none';
+
+  // Calculate scores
+  const scores = {};
+  for (const [gift, items] of Object.entries(gifts)) {
+    scores[gift] = items.reduce((sum, itemNum) => {
+      return sum + parseInt(document.getElementById(`q${itemNum}`).value);
+    }, 0);
+  }
+
+  // Sort by score descending
+  const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+
+  // Top gifts summary
+  const topScore = sorted[0][1];
+  const topGifts = sorted.filter(([_, s]) => s >= topScore - 2);
+  const topSummary = document.getElementById('topSummary');
+  topSummary.innerHTML = `
+    <h3>Your Strongest Gifts</h3>
+    <div class="top-gift-badges">
+      ${topGifts.map(([name, score]) => `<span class="top-badge">${name} (${score})</span>`).join('')}
+    </div>
+  `;
+
+  // Render all results
+  const rc = document.getElementById('resultsContainer');
+  rc.innerHTML = '';
+  sorted.forEach(([name, score], i) => {
+    const pct = (score / 25) * 100;
+    const level = pct >= 72 ? 'high' : pct >= 48 ? 'mid' : 'low';
+    const div = document.createElement('div');
+    div.className = 'gift-result';
+    div.style.animationDelay = `${i * 0.05}s`;
+    div.innerHTML = `
+      <span class="gift-rank ${i < 3 ? 'top' : ''}">${i + 1}</span>
+      <span class="gift-info">
+        <span class="gift-name">${name}</span>
+        <span class="gift-score-text">${score}/25</span>
+      </span>
+      <span class="gift-bar-wrap">
+        <div class="gift-bar">
+          <div class="gift-bar-fill ${level}" style="width: 0%"></div>
+        </div>
+      </span>
+      <span class="gift-score-num">${score}</span>
+    `;
+    rc.appendChild(div);
+
+    // Animate bar
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        div.querySelector('.gift-bar-fill').style.width = `${pct}%`;
+      }, 100 + i * 60);
+    });
+  });
+
+  const results = document.getElementById('resultsSection');
+  results.classList.add('visible');
+  results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function resetSurvey() {
+  for (let i = 1; i <= 80; i++) {
+    const sel = document.getElementById(`q${i}`);
+    sel.value = '';
+    sel.classList.remove('has-value');
+    sel.closest('.question-item').classList.remove('answered');
+  }
+  document.getElementById('resultsSection').classList.remove('visible');
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
